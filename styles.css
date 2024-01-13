@@ -53,6 +53,17 @@
     font-size: 32px;
     color: var(--primary-yellow);
     font-family: 'Press Start 2P', cursive;
+    position: relative;
+  }
+
+  
+  /* Media query for screens with a maximum width of 600px */
+  @media only screen and (max-width: 600px) {
+    .title img {
+      display: none; /* Hide images on smaller screens */
+      position: unset;
+      margin-left: 5px; 
+    }
   }
   
   /* MAIN */
