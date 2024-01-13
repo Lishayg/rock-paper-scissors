@@ -23,9 +23,11 @@ function selectGameMode() {
     if (selectedMode === '1') {
         gameMode = 'twoPlayers';
         alert(`It's ${currentPlayer}'s turn`);
+        restartGame()
         startGame();
     } else if (selectedMode === '2') {
         gameMode = 'againstComputer';
+        restartGame()
         startGame();
     } else {
         alert('Invalid selection. Please choose 1 or 2.');
@@ -35,7 +37,9 @@ function selectGameMode() {
 
 function startGame() {
     // Hide or disable the button to select game mode
-    document.getElementById('selectModeBtn').style.display = 'none';
+    // document.getElementById('selectModeBtn').style.display = 'none';
+    document.getElementById('selectModeBtn').textContent = gameMode + ' game';
+    
 
     // Display the buttons and other game elements based on the selected game mode
     if (gameMode === 'twoPlayers' || gameMode === 'againstComputer') {
@@ -348,19 +352,19 @@ function restartGame() {
   
   document.body.style.textAlign = 'center';
   document.getElementById('selectModeBtn').style.display = 'inline-block'; // or 'inline'
-  selectModeBtn.textContent = 'Select Game Mode'
-  scoreInfo.textContent = 'Choose your weapon'
-  scoreMessage.textContent = 'First to score 5 points wins the game'
+  selectModeBtn.textContent = 'Select Game Mode';
+  scoreInfo.textContent = 'Choose your weapon';
+  scoreMessage.textContent = 'First to score 5 points wins the game';
   if (gameMode === 'againstComputer'){
-    player1ScorePara.textContent = `Player: 0`
-    player2ScorePara.textContent = `Computer: 0`
+    player1ScorePara.textContent = `Player: 0`;
+    player2ScorePara.textContent = `Computer: 0`;
   }
   else{
-    player1ScorePara.textContent = `Player1: 0`
-    player2ScorePara.textContent = `Player2: 0`
+    player1ScorePara.textContent = `Player1: 0`;
+    player2ScorePara.textContent = `Player2: 0`;
   }
-  player1Sign.textContent = '❔'
-  player2Sign.textContent = '❔'
+  player1Sign.textContent = '❔';
+  player2Sign.textContent = '❔';
   endgameModal.classList.remove('active')
   overlay.classList.remove('active')
 }
