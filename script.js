@@ -1,31 +1,84 @@
 // GAME
 
-let playerScore = 0
-let computerScore = 0
+let player1Score = 0
+let player2Score = 0
 let roundWinner = ''
+let gameMode = 'againstComputer';
+let currentPlayer = 'player1';
+let player1Selection;
+let player2Selection;
+
+// Function to set the default game mode and initialize the page
+function initializePage() {
+    selectGameMode(); // Set the default game mode
+    // Other initialization code if needed
+}
+
+function selectGameMode() {
+    // Display a modal or prompt to let the user choose the game mode
+    // For simplicity, let's use a prompt for now
+    const selectedMode = prompt("Select game mode:\n1. Two Players\n2. Against Computer");
+
+    // Check the selected mode
+    if (selectedMode === '1') {
+        gameMode = 'twoPlayers';
+        alert(`It's ${currentPlayer}'s turn`);
+        startGame();
+    } else if (selectedMode === '2') {
+        gameMode = 'againstComputer';
+        startGame();
+    } else {
+        alert('Invalid selection. Please choose 1 or 2.');
+    }
+    
+}
+
+function startGame() {
+    // Hide or disable the button to select game mode
+    document.getElementById('selectModeBtn').style.display = 'none';
+
+    // Display the buttons and other game elements based on the selected game mode
+    if (gameMode === 'twoPlayers' || gameMode === 'againstComputer') {
+        // Display buttons for both game modes
+        document.getElementById('rockBtn').style.display = 'block';
+        document.getElementById('paperBtn').style.display = 'block';
+        document.getElementById('scissorsBtn').style.display = 'block';
+    }
+
+}
 
 
-function playRound(playerSelection, computerSelection) {
-  if (playerSelection === computerSelection) {
+function playRound(player1Selection, player2Selection) {
+  if (player1Selection === player2Selection) {
     roundWinner = 'tie'
   }
   if (
-    (playerSelection === 'ROCK' && computerSelection === 'SCISSORS') ||
-    (playerSelection === 'SCISSORS' && computerSelection === 'PAPER') ||
-    (playerSelection === 'PAPER' && computerSelection === 'ROCK')
+    (player1Selection === 'ROCK' && player2Selection === 'SCISSORS') ||
+    (player1Selection === 'SCISSORS' && player2Selection === 'PAPER') ||
+    (player1Selection === 'PAPER' && player2Selection === 'ROCK')
   ) {
-    playerScore++
-    roundWinner = 'player'
+    player1Score++
+    if (gameMode === 'againstComputer') {
+        roundWinner = 'player'
+    }
+    else{
+        roundWinner = 'player1'
+    }
   }
   if (
-    (computerSelection === 'ROCK' && playerSelection === 'SCISSORS') ||
-    (computerSelection === 'SCISSORS' && playerSelection === 'PAPER') ||
-    (computerSelection === 'PAPER' && playerSelection === 'ROCK')
+    (player2Selection === 'ROCK' && player1Selection === 'SCISSORS') ||
+    (player2Selection === 'SCISSORS' && player1Selection === 'PAPER') ||
+    (player2Selection === 'PAPER' && player1Selection === 'ROCK')
   ) {
-    computerScore++
-    roundWinner = 'computer'
+    player2Score++
+    if (gameMode === 'againstComputer') {
+        roundWinner = 'computer'
+    }
+    else{
+        roundWinner = 'player2'
+    }
   }
-  updateScoreMessage(roundWinner, playerSelection, computerSelection)
+  updateScoreMessage(roundWinner, player1Selection, player2Selection)
 }
 
 function getRandomChoice() {
@@ -41,17 +94,17 @@ function getRandomChoice() {
 }
 
 function isGameOver() {
-  return playerScore === 5 || computerScore === 5
+  return player1Score === 5 || player2Score === 5
 }
 
 // UI
 
 const scoreInfo = document.getElementById('scoreInfo')
 const scoreMessage = document.getElementById('scoreMessage')
-const playerScorePara = document.getElementById('playerScore')
-const computerScorePara = document.getElementById('computerScore')
-const playerSign = document.getElementById('playerSign')
-const computerSign = document.getElementById('computerSign')
+const player1ScorePara = document.getElementById('player1Score')
+const player2ScorePara = document.getElementById('player2Score')
+const player1Sign = document.getElementById('player1Sign')
+const player2Sign = document.getElementById('player2Sign')
 const rockBtn = document.getElementById('rockBtn')
 const paperBtn = document.getElementById('paperBtn')
 const scissorsBtn = document.getElementById('scissorsBtn')
@@ -66,25 +119,60 @@ scissorsBtn.addEventListener('click', () => handleClick('SCISSORS'))
 restartBtn.addEventListener('click', restartGame)
 overlay.addEventListener('click', closeEndgameModal)
 
+
 function handleClick(playerSelection) {
-  if (isGameOver()) {
-    openEndgameModal()
-    return
-  }
+    // Check if it's a two-player game and it's player1's turn
+    if (gameMode === 'twoPlayers' && currentPlayer === 'player1') {
+        // Store player1's selection
+        player1Selection = playerSelection;
+        // Change the player turn to player2
+        currentPlayer = 'player2';
+        alert(`It's ${currentPlayer}'s turn`);
+    } else if (gameMode === 'twoPlayers' && currentPlayer === 'player2') {
+        // Store player2's selection
+        player2Selection = playerSelection;
+        // Evaluate the round and reset for the next round
+        playRound(player1Selection, player2Selection);
+        // Display the results
+        updateChoices(player1Selection, player2Selection);
+        updateScore();
 
-  const computerSelection = getRandomChoice()
-  playRound(playerSelection, computerSelection)
-  updateChoices(playerSelection, computerSelection)
-  updateScore()
+        // Check if the game is over
+        if (isGameOver()) {
+            openEndgameModal();
+            setFinalMessage();
+        } else {
+            // Change the player turn back to player1 for the next round
+            currentPlayer = 'player1';
+            alert(`It's ${currentPlayer}'s turn`);
+        }
+    } else {
+        // Against computer mode
+        // Generate the computer's selection if in againstComputer mode
+        player2Selection = getRandomChoice();
+        player1Selection = playerSelection;
+        // Evaluate the round and reset for the next round
+        playRound(player1Selection, player2Selection);
+        // Display the results
+        updateChoices(player1Selection, player2Selection);
+        updateScore();
 
-  if (isGameOver()) {
-    openEndgameModal()
-    setFinalMessage()
-  }
+        // Check if the game is over
+        if (isGameOver()) {
+            openEndgameModal();
+            setFinalMessage();
+        } else {
+            // Change the player turn back to player1 for the next round
+            currentPlayer = 'player1';
+        }
+    }
+
+    
+
 }
 
-function updateChoices(playerSelection, computerSelection) {
-  switch (playerSelection) {
+function updateChoices(player1Selection, player2Selection) {
+  switch (player1Selection) {
     case 'ROCK':
         // Create an img element
         var rockImage = document.createElement('img');
@@ -95,10 +183,10 @@ function updateChoices(playerSelection, computerSelection) {
         rockImage.style.objectFit = 'contain';
 
         // Clear any existing content in playerSign
-        playerSign.innerHTML = '';
+        player1Sign.innerHTML = '';
 
         // Append the img element to playerSign
-        playerSign.appendChild(rockImage);
+        player1Sign.appendChild(rockImage);
         break;
     case 'PAPER':
         // Create an img element
@@ -110,10 +198,10 @@ function updateChoices(playerSelection, computerSelection) {
         paperImage.style.objectFit = 'contain';
 
         // Clear any existing content in playerSign
-        playerSign.innerHTML = '';
+        player1Sign.innerHTML = '';
 
         // Append the img element to playerSign
-        playerSign.appendChild(paperImage);
+        player1Sign.appendChild(paperImage);
         break;
     case 'SCISSORS':
         // Create an img element
@@ -125,14 +213,14 @@ function updateChoices(playerSelection, computerSelection) {
         scissorsImage.style.objectFit = 'contain';
 
         // Clear any existing content in playerSign
-        playerSign.innerHTML = '';
+        player1Sign.innerHTML = '';
 
         // Append the img element to playerSign
-        playerSign.appendChild(scissorsImage);
+        player1Sign.appendChild(scissorsImage);
         break;
   }
 
-  switch (computerSelection) {
+  switch (player2Selection) {
     case 'ROCK':
         // Create an img element
         var rockImage = document.createElement('img');
@@ -143,10 +231,10 @@ function updateChoices(playerSelection, computerSelection) {
         rockImage.style.objectFit = 'contain';
 
         // Clear any existing content in computerSign
-        computerSign.innerHTML = '';
+        player2Sign.innerHTML = '';
 
         // Append the img element to computerSign
-        computerSign.appendChild(rockImage);
+        player2Sign.appendChild(rockImage);
         break;
     case 'PAPER':
         // Create an img element
@@ -158,10 +246,10 @@ function updateChoices(playerSelection, computerSelection) {
         paperImage.style.objectFit = 'contain';
 
         // Clear any existing content in computerSign
-        computerSign.innerHTML = '';
+        player2Sign.innerHTML = '';
 
         // Append the img element to computerSign
-        computerSign.appendChild(paperImage);
+        player2Sign.appendChild(paperImage);
         break;
     case 'SCISSORS':
         // Create an img element
@@ -173,10 +261,10 @@ function updateChoices(playerSelection, computerSelection) {
         scissorsImage.style.objectFit = 'contain';
 
         // Clear any existing content in computerSign
-        computerSign.innerHTML = '';
+        player2Sign.innerHTML = '';
 
         // Append the img element to computerSign
-        computerSign.appendChild(scissorsImage);
+        player2Sign.appendChild(scissorsImage);
         break;
   }
 }
@@ -184,33 +272,47 @@ function updateChoices(playerSelection, computerSelection) {
 function updateScore() {
   if (roundWinner === 'tie') {
     scoreInfo.textContent = "It's a tie!"
-  } else if (roundWinner === 'player') {
+  } else if (gameMode === 'againstComputer' && roundWinner === 'player') {
     scoreInfo.textContent = 'You won!'
-  } else if (roundWinner === 'computer') {
+  } else if (gameMode === 'againstComputer' && roundWinner === 'computer') {
     scoreInfo.textContent = 'You lost!'
   }
+  else if (gameMode === 'twoPlayers' && roundWinner === 'player1') {
+    scoreInfo.textContent = 'Player1 won!'
+  } else if (gameMode === 'twoPlayers' && roundWinner === 'player2') {
+    scoreInfo.textContent = 'Player2 won!'
+  }
 
-  playerScorePara.textContent = `Player: ${playerScore}`
-  computerScorePara.textContent = `Computer: ${computerScore}`
+
+  if (gameMode === 'againstComputer'){
+    player1ScorePara.textContent = `Player: ${player1Score}`
+    player2ScorePara.textContent = `Computer: ${player2Score}`
+  }
+  else{
+    player1ScorePara.textContent = `Player1: ${player1Score}`
+    player2ScorePara.textContent = `Player2: ${player2Score}`
+  }
+  
 }
 
-function updateScoreMessage(winner, playerSelection, computerSelection) {
-  if (winner === 'player') {
+function updateScoreMessage(winner, player1Selection, player2Selection) {
+
+  if (winner === 'player' || winner === 'player1') {
     scoreMessage.textContent = `${capitalizeFirstLetter(
-      playerSelection
-    )} beats ${computerSelection.toLowerCase()}`
+      player1Selection
+    )} beats ${player2Selection.toLowerCase()}`
     return
   }
-  if (winner === 'computer') {
+  if (winner === 'computer' || winner === 'player2') {
     scoreMessage.textContent = `${capitalizeFirstLetter(
-      playerSelection
-    )} is beaten by ${computerSelection.toLowerCase()}`
+      player1Selection
+    )} is beaten by ${player2Selection.toLowerCase()}`
     return
   }
 
   scoreMessage.textContent = `${capitalizeFirstLetter(
-    playerSelection
-  )} ties with ${computerSelection.toLowerCase()}`
+    player1Selection
+  )} ties with ${player2Selection.toLowerCase()}`
 }
 
 function capitalizeFirstLetter(string) {
@@ -228,20 +330,37 @@ function closeEndgameModal() {
 }
 
 function setFinalMessage() {
-  return playerScore > computerScore
-    ? (endgameMsg.textContent = 'You won!')
-    : (endgameMsg.textContent = 'You lost...')
+    if (gameMode === 'againstComputer' && player1Score > player2Score) {
+        endgameMsg.textContent = 'You won!'
+    } else if (gameMode === 'againstComputer' && player1Score < player2Score) {
+        endgameMsg.textContent = 'You lost...'
+    } else if (gameMode === 'twoPlayers' && player1Score > player2Score) {
+        endgameMsg.textContent = 'Player1 won!'
+    } else if (gameMode === 'twoPlayers' && player1Score < player2Score) {
+        endgameMsg.textContent = 'Player2 won!'
+    }
+
 }
 
 function restartGame() {
-  playerScore = 0
-  computerScore = 0
+  player1Score = 0
+  player2Score = 0
+  
+  document.body.style.textAlign = 'center';
+  document.getElementById('selectModeBtn').style.display = 'inline-block'; // or 'inline'
+  selectModeBtn.textContent = 'Select Game Mode'
   scoreInfo.textContent = 'Choose your weapon'
   scoreMessage.textContent = 'First to score 5 points wins the game'
-  playerScorePara.textContent = 'Player: 0'
-  computerScorePara.textContent = 'Computer: 0'
-  playerSign.textContent = '❔'
-  computerSign.textContent = '❔'
+  if (gameMode === 'againstComputer'){
+    player1ScorePara.textContent = `Player: 0`
+    player2ScorePara.textContent = `Computer: 0`
+  }
+  else{
+    player1ScorePara.textContent = `Player1: 0`
+    player2ScorePara.textContent = `Player2: 0`
+  }
+  player1Sign.textContent = '❔'
+  player2Sign.textContent = '❔'
   endgameModal.classList.remove('active')
   overlay.classList.remove('active')
 }

@@ -19,22 +19,28 @@
   </head>
   <body>
     <header class="header">
-      <h1 class="title">ROCK PAPER SCISSORS</h1>
+      <h1 class="title">
+        <img src="favicon.ico" alt="Game Icon" height="50" width="50">
+        ROCK PAPER SCISSORS
+        <img src="favicon.ico" alt="Game Icon" height="50" width="50">
+    </h1>
     </header>
     <main class="main">
       <div class="scoreboard">
+        <button class="btn" id="selectModeBtn" onclick="selectGameMode()">Select Game Mode</button>
+
         <h2 class="score-info" id="scoreInfo">Choose your weapon</h2>
         <h3 class="score-message" id="scoreMessage">
           First to score 5 points wins the game
         </h3>
         <div class="scores-container">
           <div class="score-box">
-            <div class="sign" id="playerSign">❔</div>
-            <p class="score" id="playerScore">Player: 0</p>
+            <div class="sign" id="player1Sign">❔</div>
+            <p class="score" id="player1Score">Player1: 0</p>
           </div>
           <div class="score-box">
-            <div class="sign" id="computerSign">❔</div>
-            <p class="score" id="computerScore">Computer: 0</p>
+            <div class="sign" id="player2Sign">❔</div>
+            <p class="score" id="player2Score">Player2: 0</p>
           </div>
         </div>
       </div>
